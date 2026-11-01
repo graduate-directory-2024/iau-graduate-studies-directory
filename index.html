@@ -1,136 +1,457 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0d2647">
-  <meta name="description" content="Historical 2024 Graduate Studies staff directory developed during cooperative training at Imam Abdulrahman Bin Faisal University; search administrative units, employee names, office numbers, extensions and work email addresses.">
-  <title>دليل وحدات الدراسات العليا | Graduate Studies Directory</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#003366">
+  <meta name="description" content="دليل منسوبي عمادة الدراسات العليا وشؤون الابتعاث والتدريب">
+  <title>الدراسات العليا</title>
   <link rel="icon" href="assets/iau-logo.jpg" type="image/jpeg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script src="directory-data.js" defer></script>
-  <script src="script.js" defer></script>
+  <style>
+    :root { --blue:#003366; --ink:#004a6e; --pale:#e6f2f0; --panel:#f5f5f5; --outline:#d1dcdf; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; font-family:Arial,Tahoma,sans-serif; background-color:var(--pale); color:var(--ink); text-align:center; line-height:1.6; }
+    a { color:inherit; }
+    button,select,input { font:inherit; }
+    .navbar { background-color:var(--blue); color:white; min-height:71px; display:flex; align-items:center; justify-content:center; }
+    .nav-inner { width:min(1100px,94%); display:flex; align-items:center; justify-content:flex-start; }
+    .navbar-brand { padding:6px; display:inline-flex; align-items:center; }
+    .navbar-brand img { display:block; height:53px; width:auto; max-width:180px; object-fit:contain; background:#fff; }
+    .icon-bar { background-color:var(--blue); border-top:1px solid rgba(255,255,255,.22); padding:10px 0; }
+    .icon-bar a { color:white; text-decoration:none; font-size:1.12rem; display:inline-flex; gap:10px; align-items:center; padding:4px 9px; }
+    .icon-bar a:hover, .icon-bar a:focus-visible { text-decoration:underline; }
+    .icon-bar svg { width:23px; height:23px; stroke:currentColor; fill:none; stroke-width:2.3; stroke-linecap:round; stroke-linejoin:round; }
+    .section-icon svg { width:35px; height:35px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+    .header { background-color:var(--blue); color:#fff; padding:28px 12px; text-align:center; }
+    .header h1 { font-weight:bold; font-size:clamp(1.45rem,3vw,2.2rem); margin:0; line-height:1.6; }
+    .container { width:min(1040px,94%); margin:0 auto; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    .content { padding:26px 0 46px; min-height:440px; }
+    .translator-bar { display:flex; align-items:center; justify-content:flex-start; margin-bottom:19px; }
+    .lang-switch { display:flex; align-items:center; gap:8px; color:var(--blue); font-size:.9rem; }
+    .lang-switch select { background:white; color:var(--ink); border:1px solid #bdd0d2; border-radius:3px; min-width:116px; padding:7px 9px; }
+    .card { border:1px solid #d7e0e2; background:white; border-radius:0; margin-bottom:21px; overflow:hidden; }
+    .icon-option { text-align:center; padding:24px 27px 28px; transition:transform .2s ease; }
+    .icon-option .section-icon { display:inline-flex; align-items:center; justify-content:center; width:65px; height:65px; border-radius:50%; background:var(--blue); color:white; font-size:2rem; }
+    .icon-option h2 { font-size:1.55rem; margin:9px 0 17px; color:#333; font-weight:700; }
+    .unit-picker { display:block; width:100%; min-height:45px; border:1px solid #b9cbd0; background:#fff; padding:8px 12px; border-radius:3px; color:#333; text-align:right; }
+    .search-input { display:block; width:100%; background:#fff; color:#333; border:1px solid #b9cbd0; border-radius:3px; margin-top:12px; padding:10px 12px; }
+    .search-input:focus,.unit-picker:focus,.lang-switch select:focus { outline:2px solid #5681a5; outline-offset:2px; }
+    .search-instruction { text-align:right; font-size:.84rem; color:#4b636b; margin:7px 0 0; }
+    .results { margin-top:19px; text-align:right; }
+    .results[hidden],.status[hidden] { display:none; }
+    .results-head { background:var(--blue); color:#fff; padding:9px 13px; font-weight:bold; font-size:1.03rem; }
+    .employee-list { background:var(--panel); padding:4px 15px; }
+    .person { padding:12px 4px; border-bottom:1px solid #d7e0e2; }
+    .person:last-child { border-bottom:0; }
+    .person strong { display:block; color:#073963; font-size:1.05rem; margin-bottom:4px; }
+    .person p { color:#243b45; margin:4px 0; font-size:.96rem; overflow-wrap:anywhere; }
+    .person .email-link { color:#004a80; text-decoration:underline; }
+    .person .field { color:#536d75; font-weight:bold; }
+    .status { font-size:.92rem; color:#345d69; margin-top:10px; }
+    .status.error { color:#97452d; }
+    .links-card { padding:24px 27px 25px; }
+    .links-card h2 { margin:9px 0 19px; }
+    .faq-group { display:flex; flex-direction:column; gap:12px; }
+    .faq-icon { background:var(--blue); color:#fff; border-radius:5px; cursor:pointer; padding:12px 10px; }
+    .faq-icon a { display:block; color:#fff; text-decoration:none; font-size:1.05rem; font-weight:600; }
+    .faq-icon:hover,.faq-icon:focus-within { background:#164c7f; }
+    .faq-icon a:focus-visible { outline:2px solid white; outline-offset:3px; }
+    footer { background:var(--blue); color:white; padding:13px 18px 17px; text-align:center; font-size:.92rem; }
+    footer p { margin:5px 0; }
+    footer .archive { color:#c7d9e8; font-size:.79rem; }
+    .main-grid { display:grid; grid-template-columns:1.1fr .9fr; align-items:start; gap:22px; }
+    .main-grid .card { height:auto; }
+    @media(max-width:720px){
+      .navbar { min-height:64px; }
+      .header { padding:25px 15px; }
+      .main-grid { grid-template-columns:1fr; gap:0; }
+      .content { padding-top:20px; }
+      .icon-option { padding:22px 15px; }
+      .icon-option h2 { font-size:1.4rem; }
+      .links-card { padding:22px 15px; }
+      .person strong { font-size:1rem; }
+    }
+    @media(prefers-reduced-motion:reduce){ html { scroll-behavior:auto; } .icon-option { transition:none; } }
+  </style>
 </head>
 <body>
-  <a class="skip-link" href="#directory">تجاوز إلى الدليل</a>
-  <header class="site-header">
-    <div class="shell header-inner">
-      <a class="brand" href="#top" aria-label="العودة إلى البداية">
-        <span class="brand-mark"><img src="assets/iau-logo.jpg" alt="شعار جامعة الإمام عبدالرحمن بن فيصل"></span>
-        <span class="brand-copy">
-          <strong data-i18n="brandTitle">دليل الدراسات العليا</strong>
-          <small data-i18n="brandSub">مشروع تدريب تعاوني · 2024</small>
-        </span>
-      </a>
-      <nav class="desktop-nav" aria-label="روابط الموقع">
-        <a href="#top" data-i18n="navHome">الرئيسية</a>
-        <a href="#directory" data-i18n="navDirectory">الدليل</a>
-        <a href="#about" data-i18n="navAbout">عن المشروع</a>
-      </nav>
-      <button type="button" class="language-toggle" id="languageToggle" aria-label="Switch to English" title="Change language">
-        <span class="language-icon" aria-hidden="true">◎</span><span id="languageLabel">English</span>
-      </button>
-    </div>
-  </header>
-
-  <main id="top">
-    <section class="hero" aria-labelledby="heroTitle">
-      <div class="hero-orb hero-orb-one" aria-hidden="true"></div>
-      <div class="hero-orb hero-orb-two" aria-hidden="true"></div>
-      <div class="shell hero-grid">
-        <div class="hero-copy">
-          <div class="eyebrow"><span class="eyebrow-dot"></span><span data-i18n="eyebrow">مشروع تدريبي مستقل · 2024</span></div>
-          <h1 id="heroTitle" data-i18n="heroTitle">دليل وحدات<br><span>الدراسات العليا</span></h1>
-          <p class="hero-summary" data-i18n="heroSummary">واجهة رقمية مبسطة لاستعراض وحدات العمادة، والبحث عنها، والوصول إلى الخدمات ذات الصلة — بتجربة واضحة وسريعة على جميع الأجهزة.</p>
-          <div class="hero-actions">
-            <a href="#directory" class="button button-primary"><span data-i18n="explore">استكشف الوحدات</span><span aria-hidden="true">↗</span></a>
-            <a href="#about" class="button button-ghost" data-i18n="aboutButton">تفاصيل المشروع</a>
-          </div>
-          <div class="hero-footnote"><span aria-hidden="true">ⓘ</span><span data-i18n="demoNote">يعرض الدليل بيانات الاتصال الوظيفية الواردة في مشروع عام 2024؛ وقد تكون تغيّرت منذ ذلك الوقت.</span></div>
-        </div>
-        <div class="hero-preview" aria-hidden="true">
-          <div class="preview-window">
-            <div class="preview-window-head"><span class="window-dots"><i></i><i></i><i></i></span><span class="preview-url">iau · graduate studies directory</span><span class="preview-mini-icon">▦</span></div>
-            <div class="preview-window-body">
-              <div class="preview-kicker" data-i18n="previewLabel">نظرة على الدليل</div>
-              <div class="preview-visual-title" data-i18n="previewTitle">كل الوحدات، في مكان واحد.</div>
-              <div class="preview-search"><span>⌕</span><span data-i18n="previewSearch">ابحث عن وحدة...</span><span class="preview-key">⌘ K</span></div>
-              <div class="preview-row"><span class="preview-row-icon">▤</span><span data-i18n="previewItem1">وحدة القبول</span><span class="preview-chevron">↗</span></div>
-              <div class="preview-row"><span class="preview-row-icon">◈</span><span data-i18n="previewItem2">وحدة التسجيل</span><span class="preview-chevron">↗</span></div>
-              <div class="preview-row"><span class="preview-row-icon">⌘</span><span data-i18n="previewItem3">وحدة تقنية المعلومات</span><span class="preview-chevron">↗</span></div>
-            </div>
-          </div>
-          <div class="floating-chip"><span class="chip-check">✓</span><span data-i18n="previewChip">تصميم متجاوب</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="summary-strip" aria-label="ملخص المشروع">
-      <div class="shell summary-grid">
-        <div class="summary-item"><div class="summary-symbol">▦</div><div><strong>13</strong><span data-i18n="statUnits">وحدة تنظيمية</span></div></div>
-        <div class="summary-item"><div class="summary-symbol">⌕</div><div><strong>36</strong><span data-i18n="statSearch">موظفًا في نسخة 2024</span></div></div>
-        <div class="summary-item"><div class="summary-symbol">◎</div><div><strong>AR / EN</strong><span data-i18n="statLanguages">واجهتان لغويتان</span></div></div>
-        <div class="summary-item"><div class="summary-symbol">◇</div><div><strong>2024</strong><span data-i18n="statYear">سنة تطوير المشروع</span></div></div>
-      </div>
-    </section>
-
-    <section id="directory" class="directory-section shell" aria-labelledby="directoryTitle">
-      <div class="section-heading">
-        <div><div class="section-kicker" data-i18n="dirKicker">الدليل التفاعلي</div><h2 id="directoryTitle" data-i18n="dirTitle">استكشف الوحدات</h2><p data-i18n="dirDescription">ابحث عن الموظف بالاسم أو رقم المكتب أو التحويلة أو البريد الإلكتروني، أو تصفّح الوحدات.</p></div>
-        <div class="section-tag"><span class="tag-dot"></span><span data-i18n="sampleTag">سجلات مشروع 2024</span></div>
-      </div>
-      <div class="filter-panel">
-        <label class="search-box" for="unitSearch"><span class="search-symbol" aria-hidden="true">⌕</span><input type="search" id="unitSearch" autocomplete="off" placeholder="ابحث باسم الموظف أو الوحدة أو الرقم أو البريد..." aria-label="البحث في الوحدات"><kbd>/</kbd></label>
-        <div class="filters" role="group" aria-label="تصفية الوحدات">
-          <button class="filter-chip active" type="button" data-filter="all" aria-pressed="true" data-i18n="filterAll">جميع الوحدات</button>
-          <button class="filter-chip" type="button" data-filter="leadership" aria-pressed="false" data-i18n="filterLeadership">الإدارة العليا</button>
-          <button class="filter-chip" type="button" data-filter="administrative" aria-pressed="false" data-i18n="filterAdministrative">الشؤون الإدارية</button>
-          <button class="filter-chip" type="button" data-filter="services" aria-pressed="false" data-i18n="filterServices">الخدمات الأكاديمية</button>
-        </div>
-      </div>
-      <div class="results-meta"><span id="resultsCount" role="status" aria-live="polite">13 وحدة متاحة</span><span data-i18n="selectHint">اختر وحدة لعرض جميع بيانات موظفيها</span></div>
-      <section id="peopleResultsSection" class="people-results-section" aria-labelledby="peopleResultsHeading" hidden>
-        <div class="people-results-header"><h3 id="peopleResultsHeading">نتائج البحث عن الموظفين</h3><span id="peopleResultsCount"></span></div>
-        <div id="peopleResults" class="people-results-grid"></div>
+  <nav class="navbar" aria-label="شعار الجامعة">
+    <div class="nav-inner"><a class="navbar-brand" href="https://www.iau.edu.sa" target="_blank" rel="noopener noreferrer"><img src="assets/iau-logo.jpg" alt="شعار جامعة الإمام عبدالرحمن بن فيصل"></a></div>
+  </nav>
+  <div class="icon-bar"><a href="https://www.iau.edu.sa" target="_blank" rel="noopener noreferrer"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10h-6v-6H9v6H3z"/></svg><span data-i18n="home">الصفحة الرئيسية</span></a></div>
+  <header class="header"><h1 data-i18n="title">دليل منسوبي عمادة الدراسات العليا وشؤون الابتعاث والتدريب</h1></header>
+  <main class="content container">
+    <div class="translator-bar"><label class="lang-switch" for="languageSelect"><span data-i18n="language">اللغة</span><select id="languageSelect" aria-label="Language"><option value="ar">العربية</option><option value="en">English</option></select></label></div>
+    <div class="main-grid">
+      <section class="card icon-option" id="departmentsOption" aria-labelledby="unitsTitle">
+        <span class="section-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="5" rx=".6"/><path d="M12 7v4M4 11h16M4 11v3M12 11v3M20 11v3"/><rect x="1" y="14" width="6" height="6" rx=".6"/><rect x="9" y="14" width="6" height="6" rx=".6"/><rect x="17" y="14" width="6" height="6" rx=".6"/></svg></span>
+        <h2 id="unitsTitle" data-i18n="units">الوحدات</h2>
+        <label for="unitDropdown" class="sr-only" data-i18n="selectUnit">اختر وحدة</label>
+        <select id="unitDropdown" class="unit-picker"><option value="" data-i18n="selectUnit">اختر وحدة</option>
+            <option value="عميد الدراسات العليا">عميد الدراسات العليا</option>
+            <option value="وكيل الدراسات العليا">وكيل الدراسات العليا</option>
+            <option value="سكرتير مكتب العميد">سكرتير مكتب العميد</option>
+            <option value="الشؤون الإدارية والمالية">الشؤون الإدارية والمالية</option>
+            <option value="وحدة المالية">وحدة المالية</option>
+            <option value="وحدة القبول">وحدة القبول</option>
+            <option value="وحدة التسجيل">وحدة التسجيل</option>
+            <option value="وحدة الشؤون الأكاديمية">وحدة الشؤون الأكاديمية</option>
+            <option value="وحدة تقنية المعلومات">وحدة تقنية المعلومات</option>
+            <option value="وحدة الاتصالات الإدارية">وحدة الاتصالات الإدارية</option>
+            <option value="وحدة الابتعاث والتدريب">وحدة الابتعاث والتدريب</option>
+            <option value="شؤون الابتعاث">شؤون الابتعاث</option>
+            <option value="وحدة الخريجين">وحدة الخريجين</option>
+        </select>
+        <label for="staffSearch" class="sr-only" data-i18n="searchLabel">بحث في دليل الموظفين</label>
+        <input type="search" id="staffSearch" class="search-input" autocomplete="off" placeholder="ابحث بالاسم أو رقم المكتب أو التحويلة أو البريد الإلكتروني..." aria-label="البحث في دليل الموظفين">
+        <p class="search-instruction" data-i18n="searchHint">يمكنك اختيار الوحدة أو البحث مباشرة عن موظف.</p>
+        <p id="resultStatus" class="status" role="status" aria-live="polite" hidden></p>
+        <div id="employeeResults" class="results" hidden><div class="results-head" id="resultsHeading"></div><div class="employee-list" id="employeeList"></div></div>
       </section>
-      <div id="unitsGrid" class="units-grid"></div>
-      <div class="empty-state" id="emptyState" hidden><div class="empty-symbol">⌕</div><h3 data-i18n="emptyTitle">لا توجد نتائج مطابقة</h3><p data-i18n="emptyDescription">جرّب كلمة بحث مختلفة أو اختر جميع الوحدات.</p><button id="resetSearch" class="button button-outline" type="button" data-i18n="reset">مسح البحث</button></div>
-    </section>
-
-    <section class="links-section" aria-labelledby="linksTitle">
-      <div class="shell">
-        <div class="section-heading"><div><div class="section-kicker" data-i18n="linksKicker">روابط مفيدة</div><h2 id="linksTitle" data-i18n="linksTitle">خدمات الجامعة</h2><p data-i18n="linksDescription">روابط خارجية رسمية وردت في النسخة الأصلية من المشروع.</p></div></div>
-        <div class="links-grid">
-          <a class="resource-card" href="https://www.iau.edu.sa/ar/administration/deanships/deanship-of-graduate-studies" target="_blank" rel="noopener noreferrer"><span class="resource-icon">▣</span><span class="resource-copy"><strong data-i18n="linkDeanship">عمادة الدراسات العليا</strong><small data-i18n="external">الموقع الرسمي ↗</small></span><span class="resource-arrow" aria-hidden="true">↗</span></a>
-          <a class="resource-card" href="https://admitgraduate.iau.edu.sa/" target="_blank" rel="noopener noreferrer"><span class="resource-icon">↗</span><span class="resource-copy"><strong data-i18n="linkAdmission">بوابة القبول</strong><small data-i18n="external">الموقع الرسمي ↗</small></span><span class="resource-arrow" aria-hidden="true">↗</span></a>
-          <a class="resource-card" href="https://www.iau.edu.sa/ar/administration/deanships/deanship-of-graduate-studies/guidebooks" target="_blank" rel="noopener noreferrer"><span class="resource-icon">≡</span><span class="resource-copy"><strong data-i18n="linkGuides">الأدلة الإرشادية</strong><small data-i18n="external">الموقع الرسمي ↗</small></span><span class="resource-arrow" aria-hidden="true">↗</span></a>
-          <a class="resource-card" href="https://www.iau.edu.sa/ar/administration/deanships/deanship-of-graduate-studies/academic-calendar-for-graduate-studies" target="_blank" rel="noopener noreferrer"><span class="resource-icon">▤</span><span class="resource-copy"><strong data-i18n="linkCalendar">التقويم الأكاديمي</strong><small data-i18n="external">الموقع الرسمي ↗</small></span><span class="resource-arrow" aria-hidden="true">↗</span></a>
+      <section class="card icon-option links-card" aria-labelledby="servicesTitle">
+        <span class="section-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M2 8.8 12 4l10 4.8-10 4.7zM6 10.7v5c4.2 3.2 7.8 3.2 12 0v-5M22 9v7"/></svg></span>
+        <h2 id="servicesTitle" data-i18n="services">خدمات الدراسات العليا</h2>
+        <div class="faq-group">
+          <div class="faq-icon"><a href="https://www.iau.edu.sa/ar/administration/deanships/deanship-of-graduate-studies" target="_blank" rel="noopener noreferrer" data-i18n="link1">صفحة عمادة الدراسات العليا</a></div>
+          <div class="faq-icon"><a href="https://admitgraduate.iau.edu.sa/" target="_blank" rel="noopener noreferrer" data-i18n="link2">بوابة التقديم للدراسات العليا</a></div>
+          <div class="faq-icon"><a href="https://www.iau.edu.sa/ar/administration/deanships/deanship-of-graduate-studies/guidebooks" target="_blank" rel="noopener noreferrer" data-i18n="link3">الأدلة الإرشادية</a></div>
+          <div class="faq-icon"><a href="https://www.iau.edu.sa/ar/administration/deanships/deanship-of-graduate-studies/academic-calendar-for-graduate-studies" target="_blank" rel="noopener noreferrer" data-i18n="link4">التقويم الأكاديمي</a></div>
         </div>
-      </div>
-    </section>
-
-    <section id="about" class="about-section shell" aria-labelledby="aboutTitle">
-      <div class="about-card"><div class="about-accent"></div><div class="about-icon" aria-hidden="true">{ }</div><div class="about-copy"><div class="section-kicker" data-i18n="aboutKicker">خلفية المشروع</div><h2 id="aboutTitle" data-i18n="aboutTitle">من مشروع التدريب إلى ملف الأعمال</h2><p data-i18n="aboutDescription">بدأ هذا المشروع عام 2024 خلال فترة التدريب التعاوني في عمادة الدراسات العليا بجامعة الإمام عبدالرحمن بن فيصل. جرى تحديث واجهته ليكون نموذجًا عمليًا يوضح بناء واجهات ويب تفاعلية باستخدام HTML وCSS وJavaScript.</p><p class="about-disclaimer" data-i18n="aboutDisclaimer">هذه نسخة محدثة من مشروع التدريب لعام 2024 لعرضها ضمن ملف الأعمال؛ وليست مرجعًا رسميًا محدثًا. بيانات التواصل الوظيفية من النسخة الأصلية وقد تتغير بمرور الوقت.</p><div class="tech-tags"><span>HTML5</span><span>CSS3</span><span>JavaScript</span><span>Responsive UI</span><span>RTL / LTR</span></div></div></div>
-    </section>
+      </section>
+    </div>
   </main>
-
-  <footer class="site-footer"><div class="shell footer-inner"><div><strong data-i18n="footerTitle">دليل الدراسات العليا · مشروع 2024</strong><p data-i18n="footerSub">مشروع التدريب التعاوني لعام 2024 — هذه النسخة ليست دليلاً رسميًا مُحدّثًا.</p></div><a href="#top" class="footer-top" data-i18n="backTop">العودة للأعلى ↑</a></div></footer>
-
-  <dialog id="unitDialog" class="unit-dialog" aria-labelledby="dialogTitle">
-    <div class="dialog-header">
-      <div><div class="dialog-eyebrow" data-i18n="dialogEyebrow">دليل الموظفين · أرشيف 2024</div><h2 id="dialogTitle"></h2></div>
-      <button type="button" class="dialog-close" id="dialogClose" aria-label="إغلاق">×</button>
-    </div>
-    <p id="dialogDescription"></p>
-    <div class="dialog-sample staff-dialog-section">
-      <div class="dialog-sample-heading"><span data-i18n="staffListTitle">أسماء الموظفين ومعلومات التواصل</span><span id="dialogStaffCount" class="sample-badge"></span></div>
-      <div id="dialogStaffList" class="staff-list"></div>
-    </div>
-    <p class="dialog-note" data-i18n="dialogNote">هذه البيانات مأخوذة حرفيًا من النسخة الأصلية لعام 2024 وقد تكون تغيّرت؛ يُرجى التحقق من المعلومات قبل استخدامها.</p>
-    <a class="dialog-link" href="https://www.iau.edu.sa/ar/administration/deanships/deanship-of-graduate-studies" target="_blank" rel="noopener noreferrer" data-i18n="officialLink">زيارة صفحة العمادة الرسمية ↗</a>
-  </dialog>
+  <footer>
+    <p data-i18n="outside">للاتصال من خارج الجامعة: يرجى إضافة 33 قبل رقم التحويلة. مثال: 33-3333-3333</p>
+    <p data-i18n="copyright">جميع الحقوق محفوظة © 2024 جامعة الإمام عبدالرحمن بن فيصل</p>
+    <p class="archive" data-i18n="archive">البيانات من مشروع عام 2024، وقد تكون تغيّرت منذ ذلك الوقت.</p>
+  </footer>
+  <script>
+    'use strict';
+    // The employee names and work contact details below were reproduced from IAU(1).html without changing the values.
+    // The public page is a 2024 historical directory; verify permission and currency before republishing.
+    const staffByUnit = {
+  "عميد الدراسات العليا": [
+    {
+      "name": "د. سعد بن محمد السعدي",
+      "office": "3107",
+      "email": "gs@iau.edu.sa",
+      "extension": "32555"
+    }
+  ],
+  "وكيل الدراسات العليا": [
+    {
+      "name": "د. عبدالله بن احمد بن إبراهيم الداعج",
+      "office": "3113",
+      "email": "aaaldaeej@iau.edu.sa",
+      "extension": "32130"
+    }
+  ],
+  "سكرتير مكتب العميد": [
+    {
+      "name": "باسمة عبدالباري محمد جمل الليل",
+      "office": "3111",
+      "email": "balleel@iau.edu.sa",
+      "extension": "32578"
+    }
+  ],
+  "الشؤون الإدارية والمالية": [
+    {
+      "name": "أ. ميرفت احمد بكر فلاته",
+      "office": "3008",
+      "email": "mafallatah@iau.edu.sa",
+      "extension": "32587"
+    }
+  ],
+  "وحدة القبول": [
+    {
+      "name": "أ. جمعه بن عيسى حسن العبيدان",
+      "office": "3067",
+      "email": "jealobidan@iau.edu.sa",
+      "extension": "32558"
+    },
+    {
+      "name": "أ. سعود بن معروف زعبان المالكي",
+      "office": "3069",
+      "email": "smalmalki@iau.edu.sa",
+      "extension": "32559"
+    },
+    {
+      "name": "أ. عبدالمنعم بن ناصر حسن الناصر",
+      "office": "3069",
+      "email": "analnaser@iau.edu.sa",
+      "extension": "32568"
+    },
+    {
+      "name": "أ. هيا بنت جلوي محمد السبيعي",
+      "office": "3020",
+      "email": "hjalsubie@iau.edu.sa",
+      "extension": "32585"
+    }
+  ],
+  "وحدة الخريجين": [
+    {
+      "name": "أ. أمين بن عبدالله محمد الغريافي",
+      "office": "3066",
+      "email": "aalgheryafi@iau.edu.sa",
+      "extension": "32553"
+    },
+    {
+      "name": "خلود بنت محمد بن سليمان السعدي",
+      "office": "3003",
+      "email": "hmalsaadi@iau.edu.sa",
+      "extension": "32023"
+    },
+    {
+      "name": "أ. خيرية محمد سعيد غرامه",
+      "office": "3020",
+      "email": "kmgramh@iau.edu.sa",
+      "extension": "32551"
+    },
+    {
+      "name": "أ. خديجة بنت احمد محمد فقيهي",
+      "office": "3003",
+      "email": "kamfaqihi@iau.edu.sa",
+      "extension": "32551"
+    }
+  ],
+  "وحدة الاتصالات الإدارية": [
+    {
+      "name": "أ. يوسف بن عيسى محمد المبارك",
+      "office": "3072",
+      "email": "yealmubarak@iau.edu.sa",
+      "extension": "32556"
+    },
+    {
+      "name": "سليمان بن عبدالله حسين العريني",
+      "office": "3073",
+      "email": "Sahaloraini@iau.edu.sa",
+      "extension": "-"
+    }
+  ],
+  "وحدة المالية": [
+    {
+      "name": "أ. مشاري بن جاسم محمد الدوسري",
+      "office": "3068",
+      "email": "mjaldossary@iau.edu.sa",
+      "extension": "32571"
+    },
+    {
+      "name": "أ. محمد بن رضا حسن البحاري",
+      "office": "3068",
+      "email": "hralbahari@iau.edu.sa",
+      "extension": "32557"
+    },
+    {
+      "name": "أ. ريما بنت عبد الرحمن إبراهيم المهوس",
+      "office": "3017",
+      "email": "raalmahws@iau.edu.sa",
+      "extension": "32593"
+    },
+    {
+      "name": "أ. هتون محمد عبدالقادر العيساوي",
+      "office": "3121",
+      "email": "hmalisawi@iau.edu.sa",
+      "extension": "32581"
+    }
+  ],
+  "وحدة الشؤون الأكاديمية": [
+    {
+      "name": "د. محمد إسماعيل عبد الرحمن إسماعيل",
+      "office": "3122",
+      "email": "miismail@iau.edu.sa",
+      "extension": "32570"
+    }
+  ],
+  "وحدة الابتعاث والتدريب": [
+    {
+      "name": "أ. حسين بن محمد معتوق ال عاشور",
+      "office": "3070",
+      "email": "halashoor@iau.edu.sa",
+      "extension": "32564"
+    },
+    {
+      "name": "أ. إبراهيم بن محمد طاهر اليوسف",
+      "office": "3071",
+      "email": "imalyousef@iau.edu.sa",
+      "extension": "32574"
+    },
+    {
+      "name": "أ. حسين بن حسن أمان البحاري",
+      "office": "3073",
+      "email": "halpahary@iau.edu.sa",
+      "extension": "32560"
+    },
+    {
+      "name": "أ. إيمان بنت سميح محمد الالمعي",
+      "office": "3010",
+      "email": "esmalalmaie@iau.edu.sa",
+      "extension": "32572"
+    },
+    {
+      "name": "أ. ضحى بنت عبدالله عبدالعزيز الدحيلان",
+      "office": "3001",
+      "email": "dalduhailan@iau.edu.sa",
+      "extension": "32270"
+    },
+    {
+      "name": "أ. فيحاء بنت نايف فيجان ربيعان",
+      "office": "3001",
+      "email": "Fnalrobeaan@iau.edu.sa",
+      "extension": "32259"
+    }
+  ],
+  "وحدة التسجيل": [
+    {
+      "name": "أ. مشاعل بنت عبدالله علي المحيميد",
+      "office": "3019",
+      "email": "maalmohaimeed@iau.edu.sa",
+      "extension": "32583"
+    },
+    {
+      "name": "أ. نورة بنت عثمان إبراهيم العثمان",
+      "office": "3020",
+      "email": "noalothman@iau.edu.sa",
+      "extension": "32592"
+    },
+    {
+      "name": "أ. منى بنت سعود شديد الخالدي",
+      "office": "3017",
+      "email": "mssalkhaldi@iau.edu.sa",
+      "extension": "32583"
+    }
+  ],
+  "وحدة تقنية المعلومات": [
+    {
+      "name": "أ. هيام بنت بكر احمد بغدادي",
+      "office": "3016",
+      "email": "habaghdadi@iau.edu.sa",
+      "extension": "32582"
+    },
+    {
+      "name": "أ. منى بنت عبدالرحمن عبداللطيف النعيم",
+      "office": "3016",
+      "email": "mbalnaim@iau.edu.sa",
+      "extension": "32577"
+    }
+  ],
+  "شؤون الابتعاث": [
+    {
+      "name": "أ. منال بنت سلمان حمد الخالدي",
+      "office": "3004",
+      "email": "msalkhaldi@iau.edu.sa",
+      "extension": "32590"
+    },
+    {
+      "name": "أ. عائشة بنت عبداللطيف على ابن حريب",
+      "office": "3002",
+      "email": "aahareb@iau.edu.sa",
+      "extension": "32589"
+    },
+    {
+      "name": "أ. هاجر بنت علي بن إبراهيم العضيبي",
+      "office": "3002",
+      "email": "haalodhaib@iau.edu.sa",
+      "extension": "32573"
+    },
+    {
+      "name": "أ. شروق بنت عبدالله بن محمد البخيت",
+      "office": "3010",
+      "email": "samalbakheet@iau.edu.sa",
+      "extension": "30808"
+    },
+    {
+      "name": "أ. منى بنت محمد إبراهيم الجريفاني",
+      "office": "3010",
+      "email": "mmjurifani@iau.edu.sa",
+      "extension": "32580"
+    },
+    {
+      "name": "أ. منال بنت عبدالعزيز خليفة الدوسري",
+      "office": "3002",
+      "email": "mndossary@iau.edu.sa",
+      "extension": "32588"
+    }
+  ]
+};
+    const translations = {
+      ar: {
+        home:'الصفحة الرئيسية',title:'دليل منسوبي عمادة الدراسات العليا وشؤون الابتعاث والتدريب',
+        language:'اللغة',units:'الوحدات',services:'خدمات الدراسات العليا',selectUnit:'اختر وحدة',
+        searchLabel:'بحث في دليل الموظفين',searchHint:'يمكنك اختيار الوحدة أو البحث مباشرة عن موظف.',
+        searchPlaceholder:'ابحث بالاسم أو رقم المكتب أو التحويلة أو البريد الإلكتروني...',
+        link1:'صفحة عمادة الدراسات العليا',link2:'بوابة التقديم للدراسات العليا',link3:'الأدلة الإرشادية',link4:'التقويم الأكاديمي',
+        outside:'للاتصال من خارج الجامعة: يرجى إضافة 33 قبل رقم التحويلة. مثال: 33-3333-3333',
+        copyright:'جميع الحقوق محفوظة © 2024 جامعة الإمام عبدالرحمن بن فيصل',
+        archive:'البيانات من مشروع عام 2024، وقد تكون تغيّرت منذ ذلك الوقت.',
+        results:'نتائج الدليل',office:'مكتب رقم',email:'البريد الإلكتروني',extension:'رقم التحويلة',
+        none:'لم يتم العثور على نتائج مطابقة',count:n=>`عدد النتائج: ${n}`,
+      },
+      en: {
+        home:'University home', title:'Graduate Studies, Scholarships and Training Staff Directory',
+        language:'Language',units:'Administrative Units',services:'Graduate Studies Services',selectUnit:'Select a unit',
+        searchLabel:'Search the staff directory',searchHint:'Select a unit or search directly for a staff member.',
+        searchPlaceholder:'Search by name, office, extension or work email...',
+        link1:'Graduate Studies Deanship',link2:'Graduate Admissions Portal',link3:'Guides and Handbooks',link4:'Academic Calendar',
+        outside:'For calls from outside the university, the original 2024 directory instructs adding 33 before the extension.',
+        copyright:'© 2024 Imam Abdulrahman Bin Faisal University — original project text',
+        archive:'2024 project data. Contact information may have changed.',
+        results:'Directory results',office:'Office',email:'Email',extension:'Extension',
+        none:'No matching records found',count:n=>`${n} result(s)`,
+      }
+    };
+    const select=document.getElementById('unitDropdown');
+    const search=document.getElementById('staffSearch');
+    const list=document.getElementById('employeeList');
+    const results=document.getElementById('employeeResults');
+    const status=document.getElementById('resultStatus');
+    const heading=document.getElementById('resultsHeading');
+    const langSelect=document.getElementById('languageSelect');
+    let locale='ar';
+    function norm(value){
+      return String(value??'').normalize('NFKC').toLowerCase().normalize('NFD').replace(/[\u064b-\u065f\u0670]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ـ/g,'').replace(/[٠-٩]/g,x=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(x))).replace(/\s+/g,' ').trim();
+    }
+    function addText(parent,tag,text,className){
+      const el=document.createElement(tag);el.textContent=text;if(className)el.className=className;parent.appendChild(el);return el;
+    }
+    function render(){
+      list.replaceChildren();
+      const t=translations[locale];
+      const unit=select.value,needle=norm(search.value);
+      const matches=[];
+      for(const [unitName,people] of Object.entries(staffByUnit)){
+        if(unit && unitName!==unit)continue;
+        for(const person of people){
+          if(!needle || [unitName,person.name,person.office,person.email,person.extension].some(x=>norm(x).includes(needle)))matches.push({unitName,...person});
+        }
+      }
+      if(!unit&&!needle){results.hidden=true;status.hidden=true;return;}
+      if(!matches.length){results.hidden=true;status.hidden=false;status.className='status error';status.textContent=t.none;return;}
+      status.hidden=false;status.className='status';status.textContent=t.count(matches.length);
+      results.hidden=false;heading.textContent=unit?unit:t.results;
+      for(const person of matches){
+        const el=document.createElement('article');el.className='person';
+        addText(el,'strong',person.name);
+        if(!unit)addText(el,'p',person.unitName);
+        const office=addText(el,'p','');addText(office,'span',t.office+': ','field');office.appendChild(document.createTextNode(person.office));
+        const email=addText(el,'p','');addText(email,'span',t.email+': ','field');
+        const mail=document.createElement('a');mail.href='mailto:'+person.email;mail.className='email-link';mail.dir='ltr';mail.textContent=person.email;email.appendChild(mail);
+        const ext=addText(el,'p','');addText(ext,'span',t.extension+': ','field');ext.appendChild(document.createTextNode(person.extension));
+        list.appendChild(el);
+      }
+    }
+    function translate(){
+      const t=translations[locale];
+      document.documentElement.lang=locale;document.documentElement.dir=locale==='ar'?'rtl':'ltr';
+      for(const el of document.querySelectorAll('[data-i18n]')){const key=el.dataset.i18n;if(typeof t[key]==='string')el.textContent=t[key];}
+      search.placeholder=t.searchPlaceholder;
+      render();
+    }
+    select.addEventListener('change',render);
+    search.addEventListener('input',render);
+    langSelect.addEventListener('change',()=>{locale=langSelect.value;translate();});
+    translate();
+  </script>
 </body>
 </html>
